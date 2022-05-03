@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import exceptions.ErrorMessage;
 
-public class MyScanner {
-    protected static Scanner scannerPrompt = new Scanner(System.in);
+public final class MyScanner {
+    protected final static Scanner scannerPrompt = new Scanner(System.in);
 
     public static Scanner prompt() {
     	return scannerPrompt;

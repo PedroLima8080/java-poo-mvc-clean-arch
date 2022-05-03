@@ -33,7 +33,7 @@ public class UserController {
         if(users.size() == 0) System.out.println("sem registros");
 
         for(User user : users){
-            System.out.println(String.format("ID: %s, Nome: %s, Age: %s, Email: %s", user.id, user.name, user.age, user.email));
+            System.out.println(String.format("ID: %s, Nome: %s, Age: %s, Email: %s", user.getId(), user.getName(), user.getAge(), user.getEmail()));
         }
     }
 

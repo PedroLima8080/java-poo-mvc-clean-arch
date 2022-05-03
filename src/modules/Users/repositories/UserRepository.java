@@ -7,22 +7,22 @@ import java.util.ArrayList;
 
 import modules.Users.entities.User;
 import database.Database;
+import exceptions.ErrorMessage;
 
-public class UserRepository extends User {
+public final class UserRepository extends User {
     public void create(User user){
         Database database = new Database();
         database.openConnection();
         
         try {
             Statement stmt = database.getConnection().createStatement();
-            stmt.executeUpdate("INSERT INTO "+ this.table +" (name, age, email) VALUES ('"+user.name+"', "+user.age+", '"+user.email+"')");
-
+            stmt.executeUpdate("INSERT INTO "+ this.table +" (name, age, email) VALUES ('"+user.getName()+"', "+user.getAge()+", '"+user.getEmail()+"')");
+            database.closeConnection(); 
         } catch (SQLException e) {
-            System.out.println("Ocorreu um erro ao realizar query.\n"+e.getMessage());
-            System.exit(0);
+            database.closeConnection();  
+            throw new ErrorMessage("Ocorreu um erro ao realizar query.\n"+e.getMessage());
         }
 
-        database.closeConnection();  
     }
 
     public ArrayList<User> getAll() {
@@ -36,28 +36,27 @@ public class UserRepository extends User {
             ArrayList<User> users = new ArrayList<User>();
             
             while(resultQueryUsers.next()){
-                User userObject = new User();
-                userObject.id = resultQueryUsers.getInt("id");
-                userObject.name = resultQueryUsers.getString("name");
-                userObject.age = resultQueryUsers.getInt("age");
-                userObject.email = resultQueryUsers.getString("email");
+                User userObject = new User(
+                	resultQueryUsers.getInt("id"),
+                	resultQueryUsers.getString("name"),
+                	resultQueryUsers.getInt("age"),
+                	resultQueryUsers.getString("email")
+                );
+                
                 users.add(userObject);
             }
             
             database.closeConnection(); 
-
             return users;
+            
         } catch (SQLException e) {
-            System.out.println("Ocorreu um erro ao realizar query.\n"+e.getMessage());
             database.closeConnection();
-
-            return new ArrayList<User>();
+            throw new ErrorMessage("Ocorreu um erro ao realizar query.\n"+e.getMessage());
         }
     }
 
     public User getUserById(Integer user_id){
         Database database = new Database();
-        User user = new User();
         database.openConnection();
 
         try {
@@ -67,23 +66,24 @@ public class UserRepository extends User {
             if(!resultQueryUser.next()) 
             	return null;
             
-            user.id = resultQueryUser.getInt("id");
-            user.name = resultQueryUser.getString("name");
-            user.age = resultQueryUser.getInt("age");
-            user.email = resultQueryUser.getString("email");            
+            User user = new User(
+        		resultQueryUser.getInt("id"),
+        		resultQueryUser.getString("name"),
+        		resultQueryUser.getInt("age"),
+        		resultQueryUser.getString("email")
+            );           
 
+            database.closeConnection(); 
             return user;
 
         } catch (SQLException e) {
-            System.out.println("Ocorreu um erro ao realizar query.\n"+e.getMessage());
             database.closeConnection();
-            return user;
+            throw new ErrorMessage("Ocorreu um erro ao realizar query.\n"+e.getMessage());
         }
     }
 
     public User getUserByEmail(String email){
         Database database = new Database();
-        User user = new User();
         database.openConnection();
 
         try {
@@ -92,17 +92,19 @@ public class UserRepository extends User {
 
             if(!resultQueryUser.next()) return null;
             
-            user.id = resultQueryUser.getInt("id");
-            user.name = resultQueryUser.getString("name");
-            user.age = resultQueryUser.getInt("age");
-            user.email = resultQueryUser.getString("email");
+            User user = new User(
+        		resultQueryUser.getInt("id"),
+        		resultQueryUser.getString("name"),
+        		resultQueryUser.getInt("age"),
+        		resultQueryUser.getString("email")
+            );   
 
+            database.closeConnection(); 
             return user;
 
         } catch (SQLException e) {
-            System.out.println("Ocorreu um erro ao realizar query.\n"+e.getMessage());
-            database.closeConnection();
-            return user;
+        	database.closeConnection();  
+            throw new ErrorMessage("Ocorreu um erro ao realizar query.\n"+e.getMessage());
         }
     }
 
@@ -113,9 +115,10 @@ public class UserRepository extends User {
         try {
             Statement stmt = database.getConnection().createStatement();
             stmt.executeUpdate("DELETE FROM "+ this.table +" WHERE id = '"+user_id+"'");
+            database.closeConnection(); 
         } catch (SQLException e) {
-            System.out.println("Ocorreu um erro ao realizar query.\n"+e.getMessage());
-            database.closeConnection();
+        	database.closeConnection();  
+            throw new ErrorMessage("Ocorreu um erro ao realizar query.\n"+e.getMessage());
         }
     }
 }

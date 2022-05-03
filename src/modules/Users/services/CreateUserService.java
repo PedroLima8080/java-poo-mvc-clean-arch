@@ -4,28 +4,30 @@ import modules.Users.entities.User;
 import modules.Users.repositories.UserRepository;
 import utils.MyScanner;
 
-public class CreateUserService {
+public final class CreateUserService {
 	private UserRepository userRepository = new UserRepository();
 
     public void execute(){
-        User user = new User();
         System.out.print("Enter name: ");
-        user.name = MyScanner.prompt().nextLine();
+        String name = MyScanner.prompt().nextLine();
 
         System.out.print("Enter age: ");
-        user.age = MyScanner.myNextInt();
+        Integer age = MyScanner.myNextInt();
+        
+        String email = null;
 
-        while(user.email == null){
+        while(email == null){
             System.out.print("Enter email: ");
-            user.email = MyScanner.prompt().nextLine();
+            email = MyScanner.prompt().nextLine();
 
-            User userExists = userRepository.getUserByEmail(user.email);
+            User userExists = userRepository.getUserByEmail(email);
             if(userExists != null) {
-                user.email = null;
+                email = null;
                 System.out.println("Email já está em uso!");
             }
         }
 
+        User user = new User(name, age, email);
         userRepository.create(user);
     }
 }
