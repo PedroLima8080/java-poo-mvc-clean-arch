@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-java
+    ports:
+      - 3306:3306
+    volumes:
+      - ./database_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin-java
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql-java
+      - PMA_PORT=3306
